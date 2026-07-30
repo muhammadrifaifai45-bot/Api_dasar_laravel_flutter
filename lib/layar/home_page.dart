@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tokoxiezz/models/product.dart';
 import 'package:tokoxiezz/services/setingan_api.dart';
-import '../models/product.dart';
+import 'package:tokoxiezz/widget/product_card.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,8 +33,22 @@ class _HomePageState extends State<HomePage> {
               child: Text(snapshot.error.toString()),
             );
           }
+        return ListView.builder(
+          itemCount: snapshot.data!.length,
+          itemBuilder: (context, index){
+            return ProductCard(
+              Product:snapshot.data![index],
+            );
+          },
+        );
         }
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed:(){
+
+          },
+          child: const Icon(Icons.add), 
+          ),
     );
   }
 }
