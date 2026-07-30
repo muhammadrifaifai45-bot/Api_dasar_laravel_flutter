@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
           itemCount: snapshot.data!.length,
           itemBuilder: (context, index){
             return ProductCard(
-              Product:snapshot.data![index],
+              product:snapshot.data![index],
             );
           },
         );

@@ -8,7 +8,7 @@ class SetingganApi{
   static const String baseUrl ="http://127.0.0.1:8000/api";
 Future<List<Product>>getProducts() async{
   final response=await http.get(
-    Uri.parse("${baseUrl}products"),
+    Uri.parse("${baseUrl}/products"),
   );
   if(response.statusCode==200){
     List jsonData=jsonDecode(response.body);
