@@ -12,7 +12,7 @@ class MyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
    return MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: "CRUD LARAVEL FLUTTER",
+    title: "TOKO XIE",
     theme: ThemeData(
       useMaterial3: true,
       colorSchemeSeed: Colors.blueGrey,

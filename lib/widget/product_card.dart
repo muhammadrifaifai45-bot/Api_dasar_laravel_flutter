@@ -3,12 +3,25 @@ import '../models/product.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key,required this.product});
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+   final VoidCallback onDetail;
+
+   
+  const ProductCard({super.key,
+  required this.product,
+  required this.onEdit,
+  required this.onDelete,
+  required this.onDetail
+  });
 
   @override
   Widget build(BuildContext context) {
 
-    return Card(
+    return InkWell(
+    onTap: onDetail,
+    
+     child: Card(
       margin: EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -46,10 +59,34 @@ class ProductCard extends StatelessWidget {
                 fontWeight: FontWeight.normal,
               ),
             ),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Expanded(child:ElevatedButton.icon(
+                  onPressed: onEdit,
+                  icon:Icon(Icons.edit),
+                  label: const Text("EDIT")
+                  ),
+                  ),
+
+                  const SizedBox(height: 15),
+                  Expanded(child:ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: onDelete,
+                  icon:Icon(Icons.delete),
+                  label: const Text("Hapus")
+                  ),
+                  ),
+              ],
+            )
           ],
         ),
       
       ), 
+    ),
     );
    
   }

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:tokoxiezz/models/product.dart';
 import 'package:tokoxiezz/services/setingan_api.dart';
+import 'package:tokoxiezz/models/product.dart';
 
-class AddPage extends StatefulWidget {
-  const AddPage({super.key});
+
+
+class EditPage extends StatefulWidget {
+  final Product product;
+  const EditPage({super.key, required this.product});
 
   @override
-  State<AddPage> createState() => _AddPageState();
+  State<EditPage> createState() => _EditPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+
+class _EditPageState extends State<EditPage> {
   final _formKey=GlobalKey<FormState>();
   final namaController=TextEditingController();
   final hargaController=TextEditingController();
@@ -17,48 +21,81 @@ class _AddPageState extends State<AddPage> {
   final deskripsiController=TextEditingController();
   final SetingganApi api=SetingganApi();
   bool loading=false;
-  
-  Future<void>simpanData()async{
-    if(!_formKey.currentState!.validate()){
+
+  void initState(){
+    super.initState();
+    namaController.text=widget.product.nama;
+    hargaController.text=widget.product.harga.toString();
+    stockController.text=widget.product.stock.toString();
+    deskripsiController.text=widget.product.deskripsi;
+  }
+  Future <void>editData()async{
+     if(!_formKey.currentState!.validate()){
       return;
     }
     setState(() {
       loading=true;
     });
     Product product=Product(
+      id: widget.product.id,
       nama:namaController.text,
       harga:double.parse(hargaController.text),
       stock:int.parse(stockController.text),
       deskripsi: deskripsiController.text,
     );
-    bool berhasil=await api.storeProducts(product);
+    bool berhasil=await api.updateProduct(product);
     setState(() {
       loading=false;
     });
     if(berhasil){
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("PRODUK BERHASIL DI TAMBAHKAN")
+            content: Text("PRODUK BERHASIL DI UPDATE")
             ),
         );
         Navigator.pop(context,true);
     }else{
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("PRODUK GAGAL DI TAMBAHKAN")
+            content: Text("PRODUK GAGAL DI Update")
             ),
         );
     }
     
+
   }
-  
-  
+  Future<void>konfirmasiUpdate()async{
+      bool?jawaban=await showDialog(
+        context: context,
+        builder: (_){
+          return AlertDialog(
+            title: const Text("Konfirmasi"),
+            content: const Text("Apakah anda benar benar yakin data akan di pudate"),
+            actions: [
+              TextButton(onPressed: (){
+                Navigator.pop(context,false);
+              },
+               child: const Text("Batal")
+               ),
+               ElevatedButton(onPressed: (){
+                  Navigator.pop(context,true);
+               }, 
+               child: const Text("Batal"),
+               )
+            ],
+          );
+        },
+      );
+      if (jawaban==true){
+        editData();
+      }
+    }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "TAMBAH PRODUK"
+          "UPDATE PRODUK"
         ),
         centerTitle: true,
       ),
@@ -135,7 +172,7 @@ class _AddPageState extends State<AddPage> {
               SizedBox(
                 height: 50,
                 child: ElevatedButton.icon(
-                  onPressed: loading?null:simpanData,
+                  onPressed: loading?null:konfirmasiUpdate,
                   icon:loading
                   ?const SizedBox(
                     height: 20,
@@ -156,8 +193,5 @@ class _AddPageState extends State<AddPage> {
         ),
         ),
     );
-
-
-
   }
 }
