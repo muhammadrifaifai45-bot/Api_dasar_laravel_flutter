@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tokoxiezz/models/product.dart';
 import 'package:tokoxiezz/services/setingan_api.dart';
+import 'dart:io';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -17,6 +21,19 @@ class _AddPageState extends State<AddPage> {
   final deskripsiController=TextEditingController();
   final SetingganApi api=SetingganApi();
   bool loading=false;
+  File? image;
+  final picker=ImagePicker();
+
+  Future<void>pilihGambar()async{
+    final XFile? picked=await picker.pickImage(
+      source: ImageSource.gallery,
+      );
+      if(picked !=null){
+        setState(() {
+          image=File(picked.path);
+        });
+      }
+  }
   
   Future<void>simpanData()async{
     if(!_formKey.currentState!.validate()){
