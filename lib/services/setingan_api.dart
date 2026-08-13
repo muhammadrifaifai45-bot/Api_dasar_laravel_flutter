@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:async';
+import '../models/product.dart';
+import 'dart:io';
 // import 'dart:math';
 
 import 'package:http/http.dart' as http;
@@ -23,14 +26,36 @@ Future<List<Product>>getProducts() async{
 
 Future<bool>storeProducts(
   Product product,
+  File? image,
+
 )async{
+  var request=http.MultipartRequest(
+    "POST", Uri.parse("${baseUrl}products"),
+  );
+  request.fields["nama"]=product.nama;
+  request.fields["harga"]=product.harga.toString();
+  request.fields["nama"]=product.stock.toString();
+  request.fields["nama"]=product.deskripsi;
+
+  if(image!=null){
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        "gambar", 
+        image.path,
+      ),
+    );
+  
+
+  var response= await request.send();
+  return response.statusCode==201;
+  }
   final response=await http.post(
     Uri.parse("${baseUrl}/products"),
     body:{
       "nama":product.nama,
       "harga":product.harga.toString(),
       "stock":product.stock.toString(),
-      "deskripsi":product.deskripsi.toString()
+       "deskripsi":product.deskripsi.toString()
     },
     );
     return response.statusCode==201;
