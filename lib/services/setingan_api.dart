@@ -23,43 +23,72 @@ Future<List<Product>>getProducts() async{
     throw Exception("GAGAL MENGAMBIL DATA DARI API");
   }
 }
-
-Future<bool>storeProducts(
+Future<bool> storeProducts(
   Product product,
   File? image,
-
-)async{
-  var request=http.MultipartRequest(
-    "POST", Uri.parse("${baseUrl}products"),
+) async {
+  var request = http.MultipartRequest(
+    "POST",
+    Uri.parse("${baseUrl}/products"),
   );
-  request.fields["nama"]=product.nama;
-  request.fields["harga"]=product.harga.toString();
-  request.fields["nama"]=product.stock.toString();
-  request.fields["nama"]=product.deskripsi;
 
-  if(image!=null){
+  request.fields["nama"] = product.nama;
+  request.fields["harga"] = product.harga.toString();
+  request.fields["stock"] = product.stock.toString();
+  request.fields["deskripsi"] = product.deskripsi;
+
+  if (image != null) {
     request.files.add(
       await http.MultipartFile.fromPath(
-        "gambar", 
+        "gambar",
         image.path,
       ),
     );
-  
-
-  var response= await request.send();
-  return response.statusCode==201;
   }
-  final response=await http.post(
-    Uri.parse("${baseUrl}/products"),
-    body:{
-      "nama":product.nama,
-      "harga":product.harga.toString(),
-      "stock":product.stock.toString(),
-       "deskripsi":product.deskripsi.toString()
-    },
-    );
-    return response.statusCode==201;
+
+  try {
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode != 201) {
+      throw Exception(
+        "STATUS ${response.statusCode}: $responseBody",
+      );
+    }
+
+    return true;
+  } catch (e) {
+    throw Exception("Gagal mengirim product: $e");
+  }
 }
+
+// Future<bool>storeProducts(
+//   Product product,
+//   File? image,
+
+// )async{
+//   var request=http.MultipartRequest(
+//     "POST", Uri.parse("${baseUrl}/products"),
+//   );
+//   request.fields["nama"]=product.nama;
+//   request.fields["harga"]=product.harga.toString();
+//   request.fields["stock"]=product.stock.toString();
+//   request.fields["deskripsi"]=product.deskripsi;
+
+//   if(image!=null){
+//     request.files.add(
+//       await http.MultipartFile.fromPath(
+//         "gambar", 
+//         image.path,
+//       ),
+//     );
+  
+//   }
+//   var response= await request.send();
+//   return response.statusCode==20;
+//   }
+
 
   Future<bool>updateProduct(Product product)async{
     final response =await http.put(

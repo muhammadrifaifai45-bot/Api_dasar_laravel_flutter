@@ -27,12 +27,30 @@ class DetailProduct extends StatelessWidget {
                     color: Colors.amber,
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.computer,
-                      size: 120,
-                      color: Colors.purpleAccent,
-                    ),
+                  child: ClipRRect(borderRadius: BorderRadius.circular(15),
+                  child:  product.gambar==null||product.gambar!.isEmpty
+                   ?Image.asset(
+                  "asset/s25.jpg",
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                )
+                :Image.network("http://127.0.0.1:8000/storage/products/${product.gambar}",
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace){
+                    return Image.asset(
+                      "asset/s25.jpg",
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                      );
+                    
+                  },
+                  
+
+                ),
                   ),
                 ),
                 ),
@@ -96,12 +114,15 @@ class DetailProduct extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      final hasil=await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => EditPage(product: product),
                         ),
                          );
+                         if(hasil==true){
+                          Navigator.pop(context,true);
+                         }
                     },
                   ),
                 ),

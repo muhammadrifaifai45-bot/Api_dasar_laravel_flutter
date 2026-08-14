@@ -19,7 +19,7 @@ class Product{
     return Product(
       id:json['id'],
       nama:json['nama'],
-      harga:json['harga'],
+      harga:json['harga'].toDouble(),
       stock:json['stock'],
       deskripsi:json['deskripsi'],
       gambar:json['gambar']

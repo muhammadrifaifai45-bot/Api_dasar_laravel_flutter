@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,33 +35,85 @@ class _AddPageState extends State<AddPage> {
   }
 
   Future<void> simpanData() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    setState(() {
-      loading = true;
-    });
+  if (!_formKey.currentState!.validate()) {
+    return;
+  }
+
+  setState(() {
+    loading = true;
+  });
+
+  try {
     Product product = Product(
       nama: namaController.text,
       harga: double.parse(hargaController.text),
       stock: int.parse(stockController.text),
       deskripsi: deskripsiController.text,
     );
-    bool berhasil = await api.storeProducts(product,image);
+
+    bool berhasil = await api.storeProducts(product, image);
+
+    if (!mounted) return;
+
     setState(() {
       loading = false;
     });
+
     if (berhasil) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("PRODUK BERHASIL DI TAMBAHKAN")),
+        const SnackBar(
+          content: Text("PRODUK BERHASIL DI TAMBAHKAN"),
+        ),
       );
+
       Navigator.pop(context, true);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("PRODUK GAGAL DI TAMBAHKAN")),
-      );
     }
+  } catch (e) {
+    if (!mounted) return;
+
+    setState(() {
+      loading = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          e.toString(),
+        ),
+      ),
+  
+    );
   }
+}
+
+  // Future<void> simpanData() async {
+  //   if (!_formKey.currentState!.validate()) {
+  //     return;
+  //   }
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   Product product = Product(
+  //     nama: namaController.text,
+  //     harga: double.parse(hargaController.text),
+  //     stock: int.parse(stockController.text),
+  //     deskripsi: deskripsiController.text,
+  //   );
+  //   bool berhasil =await api.storeProducts(product,image);
+  //   setState(() {
+  //     loading = false;
+  //   });
+  //   if (berhasil) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("PRODUK BERHASIL DI TAMBAHKAN")),
+  //     );
+  //     Navigator.pop(context, true);
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("PRODUK GAGAL DI TAMBAHKAN")),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

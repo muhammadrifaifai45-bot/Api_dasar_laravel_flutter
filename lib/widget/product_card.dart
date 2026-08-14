@@ -28,8 +28,37 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child:ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: product.gambar==null || 
+                product.gambar!.isEmpty
+                ?Image.asset(
+                  "asset/s25.jpg",
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                )
+                :Image.network("http://127.0.0.1:8000/storage/products/${product.gambar}",
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace){
+                    return Image.asset(
+                      "asset/s25.jpg",
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                      );
+                    
+                  },
+                  
+
+                ),
+              ),
+              ),
             Text(
-              product.nama,
+              product.nama,   
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.normal,
