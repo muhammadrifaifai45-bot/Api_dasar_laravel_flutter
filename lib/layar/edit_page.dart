@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tokoxiezz/services/setingan_api.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tokoxiezz/models/product.dart';
+import 'dart:io';
 
 
 
@@ -20,6 +22,8 @@ class _EditPageState extends State<EditPage> {
   final stockController=TextEditingController();
   final deskripsiController=TextEditingController();
   final SetingganApi api=SetingganApi();
+  final piker=ImagePicker();
+  File? image;
   bool loading=false;
 
   void initState(){
@@ -28,6 +32,17 @@ class _EditPageState extends State<EditPage> {
     hargaController.text=widget.product.harga.toString();
     stockController.text=widget.product.stock.toString();
     deskripsiController.text=widget.product.deskripsi;
+  }
+
+  Future<void> pilihGambar() async {
+    final XFile? picked = await piker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (picked != null) {
+      setState(() {
+        image = File(picked.path);
+      });
+    }
   }
   Future <void>editData()async{
      if(!_formKey.currentState!.validate()){
@@ -62,6 +77,7 @@ class _EditPageState extends State<EditPage> {
         );
     }
     
+    
 
   }
   Future<void>konfirmasiUpdate()async{
@@ -70,7 +86,7 @@ class _EditPageState extends State<EditPage> {
         builder: (_){
           return AlertDialog(
             title: const Text("Konfirmasi"),
-            content: const Text("Apakah anda benar benar yakin data akan di pudate"),
+            content: const Text("Apakah anda benar benar yakin data akan di update"),
             actions: [
               TextButton(onPressed: (){
                 Navigator.pop(context,false);
@@ -119,6 +135,8 @@ class _EditPageState extends State<EditPage> {
                   return null;
                 },
               ),
+
+
 
               const SizedBox(height: 20),
               TextFormField(
