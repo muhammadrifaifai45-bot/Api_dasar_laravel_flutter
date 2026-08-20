@@ -110,4 +110,22 @@ Future<bool> storeProducts(
     return response.statusCode==200;
   }
 
+  Future<String?>login(
+    String email,
+    String password,
+  )async{
+    final response=await http.post(
+      Uri.parse("${baseUrl}login"),
+      body: {
+        "email":email,
+        "password":password,
+      },
+    );
+    if (response.statusCode==200){
+      final data=jsonDecode(response.body);
+      return data["token"];
+    }
+    return null;
+  }
+
 }
