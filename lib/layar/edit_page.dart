@@ -22,9 +22,9 @@ class _EditPageState extends State<EditPage> {
   final stockController=TextEditingController();
   final deskripsiController=TextEditingController();
   final SetingganApi api=SetingganApi();
-  final piker=ImagePicker();
-  File? image;
   bool loading=false;
+  final picker=ImagePicker();
+  File? image;
 
   void initState(){
     super.initState();
@@ -35,7 +35,7 @@ class _EditPageState extends State<EditPage> {
   }
 
   Future<void> pilihGambar() async {
-    final XFile? picked = await piker.pickImage(
+    final XFile? picked = await picker.pickImage(
       source: ImageSource.gallery,
     );
     if (picked != null) {
@@ -96,7 +96,7 @@ class _EditPageState extends State<EditPage> {
                ElevatedButton(onPressed: (){
                   Navigator.pop(context,true);
                }, 
-               child: const Text("Batal"),
+               child: const Text("oke"),
                )
             ],
           );
@@ -117,6 +117,34 @@ class _EditPageState extends State<EditPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
+         child: Center(
+          child: Column(
+            children: [
+              Center(
+                child: GestureDetector(
+                  onTap: pilihGambar,
+                  child: image == null
+                      ? Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(color: Colors.blueGrey),
+                          child: const Icon(
+                            Icons.add_a_photo,
+                            size: 60,
+                          ),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.file(
+                            image!,
+                            height: 80,
+                            width: 80,
+                            fit: BoxFit.cover,
+                          )),
+                ),
+              ),
+              SizedBox(height: 15),
+              Expanded(
         child: Form(
           key: _formKey,
           child: ListView(
@@ -135,8 +163,7 @@ class _EditPageState extends State<EditPage> {
                   return null;
                 },
               ),
-
-
+              
 
               const SizedBox(height: 20),
               TextFormField(
@@ -209,7 +236,13 @@ class _EditPageState extends State<EditPage> {
             ],
           ),
         ),
+            
         ),
-    );
+            ],
+    ),
+         )
+      )
+     );
+     
   }
 }
