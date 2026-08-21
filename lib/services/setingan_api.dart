@@ -4,8 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/product.dart';
 import 'dart:io';
-// import 'dart:math';
-
 import 'package:http/http.dart' as http;
 import 'package:tokoxiezz/models/product.dart';
 
@@ -161,5 +159,19 @@ Future<bool> storeProducts(
     }
     return null;
   }
+  
 
+  Future<void>logout()async{
+    SharedPreferences pref=await SharedPreferences.getInstance();
+    String token=pref.getString("token")??"";
+    await http.post(Uri.parse("${{baseUrl}}logout"),
+     headers:{
+    "Authorization":"bearer $token",
+    "Accept":"application/json",   
+  },
+
+    );
+    await pref.remove("token");
+    
+  }
 }
