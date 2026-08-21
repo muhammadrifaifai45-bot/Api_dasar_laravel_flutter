@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -13,19 +14,26 @@ class _LoginPageState extends State<LoginPage> {
   final sandiController=TextEditingController();
   bool isLoading=false;
 
-  // method login
-  void login(){
-    if(emailController.text == "rifai45@gmail.com" && sandiController.text == "kuyakuya"){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder:(_)=>const HomePage(),
-      ),
-      
-      );
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content:Text("EMAIL ATAU SANDI ANDA SALAH COBA LAGI MAS😒"),
-        ),
-      );
-    }
+  //method login data 
+  
+  Future<void>login()async{
+    String? token=await api.login(
+      emailController.text,
+      sandiController.text,
+    );
+  if(token!=null){
+    SharedPreferences pref= await SharedPreferences.getInstance();
+    await pref.setString("token", token);
+    Navigator.pushReplacement(
+      context,
+       MaterialPageRoute(builder:(_)=>const HomePage()),
+       );
+       
+  }else{
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("LOGIN GAGAL TIDAK BERHASIL MAAF") ,)
+    );
+  }
   }
 
   @override
