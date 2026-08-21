@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/product.dart';
 import 'dart:io';
 // import 'dart:math';
@@ -10,9 +12,19 @@ import 'package:tokoxiezz/models/product.dart';
 class SetingganApi{
   static const String baseUrl ="http://127.0.0.1:8000/api";
 Future<List<Product>>getProducts() async{
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  String token=pref.getString("token")??"";
+
   final response=await http.get(
     Uri.parse("${baseUrl}/products"),
-  );
+
+  headers:{
+    "Authorization":"bearer $token",
+    "Accept":"application/json",
+    
+  },
+    );
+    
   if(response.statusCode==200){
     List jsonData=jsonDecode(response.body);
 
