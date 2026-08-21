@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tokoxiezz/services/setingan_api.dart';
 import 'home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
@@ -12,6 +13,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final emailController=TextEditingController();
   final sandiController=TextEditingController();
+  final SetingganApi api = SetingganApi();
   bool isLoading=false;
 
   //method login data 
