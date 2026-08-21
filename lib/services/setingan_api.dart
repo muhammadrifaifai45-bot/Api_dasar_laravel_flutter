@@ -24,7 +24,7 @@ Future<List<Product>>getProducts() async{
     
   },
     );
-    
+
   if(response.statusCode==200){
     List jsonData=jsonDecode(response.body);
 
@@ -39,10 +39,17 @@ Future<bool> storeProducts(
   Product product,
   File? image,
 ) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  String token=pref.getString("token")??"";
   var request = http.MultipartRequest(
     "POST",
     Uri.parse("${baseUrl}/products"),
   );
+  request.headers.addAll({
+    "Authorization":"bearer $token",
+    "Accept":"application/json",
+    
+  });
 
   request.fields["nama"] = product.nama;
   request.fields["harga"] = product.harga.toString();
@@ -103,8 +110,15 @@ Future<bool> storeProducts(
 
 
   Future<bool>updateProduct(Product product)async{
+ SharedPreferences pref = await SharedPreferences.getInstance();
+  String token=pref.getString("token")??"";
     final response =await http.put(
       Uri.parse("${baseUrl}/products/${product.id}"),
+      headers:{
+    "Authorization":"bearer $token",
+    "Accept":"application/json",
+    
+  },
        body:{
       "nama":product.nama,
       "harga":product.harga.toString(),
@@ -116,8 +130,15 @@ Future<bool> storeProducts(
   }
 
   Future<bool>deleteProduct(int id)async{
+    SharedPreferences pref = await SharedPreferences.getInstance();
+  String token=pref.getString("token")??"";
     final response=await http.delete(
       Uri.parse("${baseUrl}/products/$id"),
+         headers:{
+    "Authorization":"bearer $token",
+    "Accept":"application/json",
+    
+  },
     );
     return response.statusCode==200;
   }
@@ -126,6 +147,7 @@ Future<bool> storeProducts(
     String email,
     String password,
   )async{
+    
     final response=await http.post(
       Uri.parse("${baseUrl}login"),
       body: {
