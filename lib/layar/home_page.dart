@@ -7,7 +7,6 @@ import 'package:tokoxiezz/models/product.dart';
 import 'package:tokoxiezz/services/setingan_api.dart';
 import 'package:tokoxiezz/widget/product_card.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -16,49 +15,84 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final SetingganApi api=SetingganApi();
+  final SetingganApi api = SetingganApi();
+  TextEditingController searchController = TextEditingController();
+  List<Product> semuaproduk = [];
+  List<Product> hasilpencarian = [];
 
-  Future<void>hapusProduct(Product product)async{
-    bool? konfirmasi=await showDialog(
-      context: context,
-      builder: (_){
-        return AlertDialog(
-          title: const Text("KONFIRMASI"),
-          content: Text("Anda yakin ingin menghapus data ini ${product.nama}?"
-          ),
-          actions: [
-            TextButton(
-              onPressed: (){
-                Navigator.pop(context,false);
-              }, 
-              child: const Text("BATAL"),
+  Future<List<Product>>?futureProduk;
+
+  void initState(){
+    super.initState();
+
+
+
+    futureProduk=api.getProducts();
+  }
+  void Cariproduk(String keyword) {
+    hasilpencarian = semuaproduk.where((produk) {
+      return produk.nama.toLowerCase().contains(keyword.toLowerCase());
+    }).toList();
+    setState(() {});
+  }
+
+  double totalstok(){
+    return  semuaproduk.fold(
+      0,(total,item)=>total+(item.harga * item.stock),
+    );
+  }
+  double totalnilai(){
+    return  semuaproduk.fold(
+      0,(total,item)=>total+(item.harga * item.stock),
+    );
+  }
+
+  void refreshData(){
+    setState(() {
+      futureProduk=api.getProducts();
+    });
+  }
+
+  Future<void> hapusProduct(Product product) async {
+    bool? konfirmasi = await showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text("KONFIRMASI"),
+            content:
+                Text("Anda yakin ingin menghapus data ini ${product.nama}?"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text("BATAL"),
               ),
               ElevatedButton(
-                onPressed: (){
-                  Navigator.pop(context,true);
+                onPressed: () {
+                  Navigator.pop(context, true);
                 },
-                 child: const Text("ya"),
-                 ),
-          ],
-        );
-      }
-    );
-    if(konfirmasi==true){
-      bool hasil=await api.deleteProduct(product.id!);
-      if(hasil){
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content:Text("produk berhasil di hapus"),
-          )
-          
-        );
-          setState(() {
-      
-    });
-
+                child: const Text("ya"),
+              ),
+            ],
+          );
+        });
+    if (konfirmasi == true) {
+      bool hasil = await api.deleteProduct(product.id!);
+      if (hasil) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("produk berhasil di hapus"),
+        ));
+        setState(() {});
       }
     }
-  
   }
+
+ void dispose(){
+  searchController.dispose();
+  super.dispose();
+ } 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,96 +102,84 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: ()async{
+            onPressed: () async {
               await api.logout();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage(),
-              ),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const LoginPage(),
+                ),
               );
             },
-            ),
+          ),
         ],
         backgroundColor: Colors.green,
         foregroundColor: Colors.red,
-      ), 
-
-      
-      body:  RefreshIndicator(
-        onRefresh: () async{
-          setState(() {
-            
-          });
-        },
-      
-      child: FutureBuilder<List<Product>>(
-        future: api.getProducts(), 
-        builder: (context, snapshot){
-          if(snapshot.connectionState==ConnectionState.waiting){
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if(snapshot.hasError){
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
-          }
-        return ListView.builder(
-          itemCount: snapshot.data!.length,
-          itemBuilder: (context, index){
-            return ProductCard(
-              product:snapshot.data![index],
-              onEdit: ()async{
-                final hasil=await Navigator.push(context,
-                MaterialPageRoute(builder: (_)=>EditPage(product:snapshot.data![index],
-                ),
-                ),
-                );
-                if(hasil == true){
-                  setState(() {
-                    
-                  });
-                }
-              },
-              onDelete: ()async{
-                await hapusProduct(snapshot.data![index]);
-              },  
-              onDetail: ()async{
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:(_) =>
-                    DetailProduct(product: snapshot.data![index]),
-                    ),
-                    
-                );
-                setState(() {
-                  
-                });
-              },
-
-              
-            );
-          },
-        );
-        }
-        ),
       ),
-        floatingActionButton: FloatingActionButton(
-          onPressed:()async{
-            //navigasi ke form hasil
-            final hasil=await Navigator.push(
-              context,MaterialPageRoute(
-                builder:(_)=>const AddPage()
-              )
-            );
-            if(hasil==true){
-              setState(() {
-                
-              });
-            }
-          },
-          child: const Icon(Icons.add), 
-          ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
+        },
+        child: FutureBuilder<List<Product>>(
+            future: api.getProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(snapshot.error.toString()),
+                );
+              }
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return ProductCard(
+                    product: snapshot.data![index],
+                    onEdit: () async {
+                      final hasil = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EditPage(
+                            product: snapshot.data![index],
+                          ),
+                        ),
+                      );
+                      if (hasil == true) {
+                        setState(() {});
+                      }
+                    },
+                    onDelete: () async {
+                      await hapusProduct(snapshot.data![index]);
+                    },
+                    onDetail: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              DetailProduct(product: snapshot.data![index]),
+                        ),
+                      );
+                      setState(() {});
+                    },
+                  );
+                },
+              );
+            }),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          //navigasi ke form hasil
+          final hasil = await Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const AddPage()));
+          if (hasil == true) {
+            setState(() {});
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
