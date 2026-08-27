@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tokoxiezz/layar/LoginxiezPage.dart';
 import 'package:tokoxiezz/layar/add_page.dart';
 import 'package:tokoxiezz/layar/detail_product.dart';
 import 'package:tokoxiezz/layar/edit_page.dart';
@@ -64,6 +65,17 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text("Data Produk Xiezz Shopp"),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: ()async{
+              await api.logout();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage(),
+              ),
+              );
+            },
+            ),
+        ],
         backgroundColor: Colors.green,
         foregroundColor: Colors.red,
       ), 
