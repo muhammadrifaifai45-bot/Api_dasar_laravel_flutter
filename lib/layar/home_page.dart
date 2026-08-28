@@ -25,8 +25,6 @@ class _HomePageState extends State<HomePage> {
   void initState(){
     super.initState();
 
-
-
     futureProduk=api.getProducts();
   }
   void Cariproduk(String keyword) {
@@ -129,8 +127,36 @@ class _HomePageState extends State<HomePage> {
                 );
               }
               if (snapshot.hasError) {
-                return Center(
-                  child: Text(snapshot.error.toString()),
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(height:MediaQuery.of(context)
+                    .size
+                    .height*
+                    0.25,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error,
+                          size: 80,
+                          color: Colors.red,
+                          ),
+                          const SizedBox(height: 15),
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(snapshot.error.toString(),
+                          textAlign: TextAlign.center
+                          ),  
+                          ),
+                          const SizedBox(height: 15),
+                          ElevatedButton(onPressed: refreshData,
+                          child: const Text("Gagal Harap Coba Lagi"),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 );
               }
               return ListView.builder(
