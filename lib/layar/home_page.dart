@@ -23,19 +23,50 @@ class _HomePageState extends State<HomePage> {
   String FilterHarga="semua";
   String sorting="Nama A-Z";
 
-  Future<List<Product>>? futureProduk;
+
+
+
+  Future<void>loadingproducts() async{
+  try{
+    final data= await api.getProducts();
+    if(!mounted)return;
+    setState(() {
+      semuaproduk=data;
+      hasilpencarian=List.from(data);
+    });
+  }catch(e){
+    if(!mounted)return;
+    ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(content: Text('Gagal Mengambil Data Mohon maaf;$e'
+       ),
+       ),
+    );
+  }
+  }
+
+
+  
 
   void initState() {
     super.initState();
 
-    futureProduk = api.getProducts();
+   loadingproducts();
   }
 
-  void Cariproduk(String keyword) {
-    hasilpencarian = semuaproduk.where((produk) {
-      return produk.nama.toLowerCase().contains(keyword.toLowerCase());
-    }).toList();
-    setState(() {});
+  void prosesdata(){
+    List<Product>data=List.from(semuaproduk);
+  //logic pencarian 
+    final keyword=searchController.text.toLowerCase();
+    if(keyword.isNotEmpty){
+      data=data.where((produk){
+        return produk.nama.toLowerCase().contains(keyword);
+      }).toList();
+    }
+
+    // hasilpencarian = semuaproduk.where((produk) {
+    //   return produk.nama.toLowerCase().contains(keyword.toLowerCase());
+    // }).toList();
+    // setState(() {});
   }
 
 
@@ -55,7 +86,7 @@ class _HomePageState extends State<HomePage> {
 
   void refreshData() {
     setState(() {
-      futureProduk = api.getProducts();
+      // futureProduk = api.getProducts();
     });
   }
 
