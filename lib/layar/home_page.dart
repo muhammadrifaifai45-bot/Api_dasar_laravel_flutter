@@ -20,6 +20,8 @@ class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
   List<Product> semuaproduk = [];
   List<Product> hasilpencarian = [];
+  String FilterHarga="semua";
+  String sorting="Nama A-Z";
 
   Future<List<Product>>? futureProduk;
 
@@ -36,10 +38,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  double totalstok() {
+
+  int totalstok() {
     return semuaproduk.fold(
       0,
-      (total, item) => total + (item.harga * item.stock),
+      (total, item) => total + item.stock
     );
   }
 
@@ -86,7 +89,7 @@ class _HomePageState extends State<HomePage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("produk berhasil di hapus"),
         ));
-        setState(() {});
+      refreshData();
       }
     }
   }
@@ -124,7 +127,7 @@ class _HomePageState extends State<HomePage> {
           setState(() {});
         },
         child: FutureBuilder<List<Product>>(
-            future: api.getProducts(),
+            future: futureProduk,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -229,6 +232,8 @@ class _HomePageState extends State<HomePage> {
                               value: "${semuaproduk.length}",
                               icon: Icons.shopping_bag,
                               color: Colors.blueAccent)),
+                     
+
                       Expanded(
                           child: DashboardCard(
                               title: "stok",
@@ -237,7 +242,7 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.blueAccent)),
                       Expanded(
                           child: DashboardCard(
-                              title: "nilai",
+                              title: "Total Asset",
                               value: "${totalnilai()}",
                               icon: Icons.payment,
                               color: Colors.green)
@@ -246,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 15),
                   TextField(controller: searchController,
-                  onChanged: Cariproduk,
+                  onSubmitted: Cariproduk,
                   decoration: InputDecoration(
                     hintText: "Cari produk yang anda inginkan ",
                     prefixIcon: const Icon(Icons.search,
@@ -269,7 +274,58 @@ class _HomePageState extends State<HomePage> {
 
                   ),
                   ),
-                  const SizedBox(height: 15,)
+                  const SizedBox(height: 15),
+                  const Text("DAFTAR PRODUK TOKO XIEZZ",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                  const SizedBox(height: 15),
+                  if(hasilpencarian.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Center(
+                      child: Text("PRODUK TIDAK DI TEMUKAN",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                      ),
+                      )
+                      
+                    ),
+                    
+                    )
+                    else
+                   ... hasilpencarian.map(
+                      (product){
+                        return ProductCard(
+                          product: product,
+                           onEdit:()async{
+                            final hasil=await Navigator.push(context, 
+                            MaterialPageRoute(builder: (_)=>EditPage(product: product,
+                            ),
+                            ),
+                            );
+                            if(hasil==true){
+                              refreshData();
+                            }
+                           },
+                           onDelete: (){
+                            hapusProduct(product);
+                           },
+                           onDetail: ()async{
+                            await Navigator.push(context, 
+                            MaterialPageRoute(builder: (_)=>DetailProduct(product: product,)
+                            ),
+                            );
+                            refreshData();
+                           },
+                           );
+                      }
+                    )
+
+                  
                 ],
               );
 
@@ -280,7 +336,7 @@ class _HomePageState extends State<HomePage> {
               //   itemBuilder: (context, index) {
               //     return ProductCard(
               //       product: snapshot.data![index],
-              //       onEdit: () async {
+              //       onEdit: () async {r
               //         final hasil = await Navigator.push(
               //           context,
               //           MaterialPageRoute(
@@ -317,7 +373,7 @@ class _HomePageState extends State<HomePage> {
           final hasil = await Navigator.push(
               context, MaterialPageRoute(builder: (_) => const AddPage()));
           if (hasil == true) {
-            setState(() {});
+            refreshData();
           }
         },
         child: const Icon(Icons.add),

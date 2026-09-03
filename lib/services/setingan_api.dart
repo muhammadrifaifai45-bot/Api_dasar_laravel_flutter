@@ -71,8 +71,8 @@ class SetingganApi {
       }
 
       return true;
-    } catch (e) {
-      throw Exception("Gagal mengirim product: $e");
+    } catch (exception) {
+      throw Exception("Gagal mengirim product: $exception");
     }
   }
 
