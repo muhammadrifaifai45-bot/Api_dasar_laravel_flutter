@@ -20,72 +20,127 @@ class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
   List<Product> semuaproduk = [];
   List<Product> hasilpencarian = [];
-  String FilterHarga="semua";
-  String sorting="Nama A-Z";
+  String FilterHarga = "semua";
+  String sorting = "Nama A-Z";
 
-
-
-
-  Future<void>loadingproducts() async{
-  try{
-    final data= await api.getProducts();
-    if(!mounted)return;
-    setState(() {
-      semuaproduk=data;
-      hasilpencarian=List.from(data);
-    });
-  }catch(e){
-    if(!mounted)return;
-    ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(content: Text('Gagal Mengambil Data Mohon maaf;$e'
-       ),
-       ),
-    );
+  Future<void> loadingproducts() async {
+    try {
+      final data = await api.getProducts();
+      if (!mounted) return;
+      setState(() {
+        semuaproduk = data;
+        hasilpencarian = List.from(data);
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal Mengambil Data Mohon maaf;$e'),
+        ),
+      );
+    }
   }
-  }
-
-
-  
 
   void initState() {
     super.initState();
 
-   loadingproducts();
+    loadingproducts();
   }
 
-  void prosesdata(){
-    List<Product>data=List.from(semuaproduk);
-  //logic pencarian 
-    final keyword=searchController.text.toLowerCase();
-    if(keyword.isNotEmpty){
-      data=data.where((Product){
+  void prosesdata() {
+    List<Product> data = List.from(semuaproduk);
+    //logic pencarian
+    final keyword = searchController.text.toLowerCase();
+    if (keyword.isNotEmpty) {
+      data = data.where((Product) {
         return Product.nama.toLowerCase().contains(keyword);
       }).toList();
     }
 
-    if(FilterHarga== "Dibawah Rp 500000"){
-      data=data.where((Product){
-        return Product.harga< 50000;
+    if (FilterHarga == "Dibawah Rp 500000") {
+      data = data.where((Product) {
+        return Product.harga < 50000;
       }).toList();
     }
-    if(FilterHarga=="Rp. 500000 - Rp. 10000000"){
-          data=data.where((Product){
-        return Product.harga >=500000 && Product.harga <=200000;
+    if (FilterHarga == "Rp. 500000 - Rp. 10000000") {
+      data = data.where((Product) {
+        return Product.harga >= 500000 && Product.harga <= 200000;
+      }).toList();
+    }
+    if (FilterHarga == "Diatas Rp 2.000.000") {
+      data = data.where((Product) {
+        return Product.harga > 2000000;
       }).toList();
     }
 
-    // hasilpencarian = semuaproduk.where((produk) {
-    //   return produk.nama.toLowerCase().contains(keyword.toLowerCase());
-    // }).toList();
-    // setState(() {});
+    //sorting
+
+    if (sorting == "Nama A-Z") {
+      data.sort(
+        (a, b) => a.nama.toLowerCase().compareTo(
+              b.nama.toLowerCase(),
+            ),
+      );
+    }
+
+    if (sorting == "Nama Z-A") {
+      data.sort(
+        (b, a) => b.nama.toLowerCase().compareTo(
+              a.nama.toLowerCase(),
+            ),
+      );
+    }
+
+    if (sorting == "Harga terendah") {
+      data.sort(
+        (a, b) => a.harga.compareTo(b.harga),
+      );
+    }
+
+    if (sorting == "Harga tertinggi") {
+      data.sort(
+        (a, b) => b.harga.compareTo(a.harga),
+      );
+    }
+    if (sorting == "Stok teresedikit") {
+      data.sort(
+        (a, b) => a.stock.compareTo(b.harga),
+      );
+    }
+
+    if (sorting == "stok terbanyak") {
+      data.sort(
+        (a, b) => b.stock.compareTo(a.harga),
+      );
+    }
+    //simpan hasil
+    setState(() {
+      hasilpencarian = data;
+    });
   }
 
+  void cariproduk(String keyword){
+    prosesdata();
+  }
+
+  void PilihFilterHarga(String? pilihanuser){
+    if(pilihanuser==null)return;
+    setState(() {
+      FilterHarga=pilihanuser;
+    });
+    prosesdata();
+  }
+
+  void pilihSorting(String? pilihanuser){
+    if(pilihanuser==null)return;
+    setState(() {
+      sorting=pilihanuser;
+    });
+    prosesdata();
+  }
 
   int totalstok() {
-    return semuaproduk.fold(
-      0,
-      (total, item) => total + item.stock
-    );
+    return semuaproduk.fold(0, (total, item) => total + item.stock);
   }
 
   double totalnilai() {
@@ -131,7 +186,7 @@ class _HomePageState extends State<HomePage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("produk berhasil di hapus"),
         ));
-      refreshData();
+        refreshData();
       }
     }
   }
@@ -274,8 +329,6 @@ class _HomePageState extends State<HomePage> {
                               value: "${semuaproduk.length}",
                               icon: Icons.shopping_bag,
                               color: Colors.blueAccent)),
-                     
-
                       Expanded(
                           child: DashboardCard(
                               title: "stok",
@@ -287,91 +340,85 @@ class _HomePageState extends State<HomePage> {
                               title: "Total Asset",
                               value: "${totalnilai()}",
                               icon: Icons.payment,
-                              color: Colors.green)
-                              ),
+                              color: Colors.green)),
                     ],
                   ),
                   const SizedBox(height: 15),
-                  TextField(controller: searchController,
-                  onSubmitted: Cariproduk,
-                  decoration: InputDecoration(
-                    hintText: "Cari produk yang anda inginkan ",
-                    prefixIcon: const Icon(Icons.search,
-                    ),
-                    suffixIcon: searchController
-                    .text
-                    .isNotEmpty
-                    ?IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: (){
-                        searchController.clear();
-                        Cariproduk("");
-                      },
-                      )
-
-                      :null,
+                  TextField(
+                    controller: searchController,
+                    onSubmitted: Cariproduk,
+                    decoration: InputDecoration(
+                      hintText: "Cari produk yang anda inginkan ",
+                      prefixIcon: const Icon(
+                        Icons.search,
+                      ),
+                      suffixIcon: searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                searchController.clear();
+                                Cariproduk("");
+                              },
+                            )
+                          : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-
-                  ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Text("DAFTAR PRODUK TOKO XIEZZ",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  ),
-                  const SizedBox(height: 15),
-                  if(hasilpencarian.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(30),
-                    child: Center(
-                      child: Text("PRODUK TIDAK DI TEMUKAN",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                      ),
-                      )
-                      
                     ),
-                    
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    "DAFTAR PRODUK TOKO XIEZZ",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  if (hasilpencarian.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(30),
+                      child: Center(
+                          child: Text(
+                        "PRODUK TIDAK DI TEMUKAN",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      )),
                     )
-                    else
-                   ... hasilpencarian.map(
-                      (product){
-                        return ProductCard(
-                          product: product,
-                           onEdit:()async{
-                            final hasil=await Navigator.push(context, 
-                            MaterialPageRoute(builder: (_)=>EditPage(product: product,
+                  else
+                    ...hasilpencarian.map((product) {
+                      return ProductCard(
+                        product: product,
+                        onEdit: () async {
+                          final hasil = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditPage(
+                                product: product,
+                              ),
                             ),
-                            ),
-                            );
-                            if(hasil==true){
-                              refreshData();
-                            }
-                           },
-                           onDelete: (){
-                            hapusProduct(product);
-                           },
-                           onDetail: ()async{
-                            await Navigator.push(context, 
-                            MaterialPageRoute(builder: (_)=>DetailProduct(product: product,)
-                            ),
-                            );
+                          );
+                          if (hasil == true) {
                             refreshData();
-                           },
-                           );
-                      }
-                    )
-
-                  
+                          }
+                        },
+                        onDelete: () {
+                          hapusProduct(product);
+                        },
+                        onDetail: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => DetailProduct(
+                                      product: product,
+                                    )),
+                          );
+                          refreshData();
+                        },
+                      );
+                    })
                 ],
               );
-
-            
 
               // return ListView.builder(
               //   itemCount: snapshot.data!.length,
