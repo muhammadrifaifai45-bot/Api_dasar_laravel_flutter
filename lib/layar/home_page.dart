@@ -58,8 +58,19 @@ class _HomePageState extends State<HomePage> {
   //logic pencarian 
     final keyword=searchController.text.toLowerCase();
     if(keyword.isNotEmpty){
-      data=data.where((produk){
-        return produk.nama.toLowerCase().contains(keyword);
+      data=data.where((Product){
+        return Product.nama.toLowerCase().contains(keyword);
+      }).toList();
+    }
+
+    if(FilterHarga== "Dibawah Rp 500000"){
+      data=data.where((Product){
+        return Product.harga< 50000;
+      }).toList();
+    }
+    if(FilterHarga=="Rp. 500000 - Rp. 10000000"){
+          data=data.where((Product){
+        return Product.harga >=500000 && Product.harga <=200000;
       }).toList();
     }
 
