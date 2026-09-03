@@ -370,16 +370,16 @@ class _HomePageState extends State<HomePage> {
                     
                   ),
                     DropdownMenuItem(
-                    value: "Harga Terendah",
-                    child: Text("Harga Terendah"),
+                    value: "Harga terendahh",
+                    child: Text("Harga Terendahh"),
                     
                   ),
                     DropdownMenuItem(
-                    value: "Harga Tertinggi",
-                    child: Text("Harga Tertinggi"),                    
+                    value: "Harga tertinggi",
+                    child: Text("Harga tertinggi"),                    
                   ),                  
                     DropdownMenuItem(
-                    value: "Stok Sedikit",
+                    value: "Stok teredikitt",
                     child: Text("Stok Sedikit"),
                     
                   ),
@@ -408,6 +408,9 @@ class _HomePageState extends State<HomePage> {
               ...hasilpencarian.map((product) {
                 return ProductCard(
                   product: product,
+                  // onTap:()async{
+
+                  // }
                   onEdit: () async {
                     final hasil = await Navigator.push(
                       context,
@@ -416,7 +419,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                     if (hasil == true) {
-                      refreshData();
+                    loadingproducts();
                     }
                   },
                   onDelete: () {
