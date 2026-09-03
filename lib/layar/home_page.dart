@@ -150,6 +150,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  //format rupiah 
+
+   String formatrupiah(int angka){
+    String Hasil=angka.toString();
+    String result='';
+    int counter=0;
+    for(int i=Hasil.length-1;i>=0;i--){
+      result=Hasil[i]+result;
+      counter++;
+      if(counter==3 && i !=0){
+        result=".$result";
+        counter=0;
+      }
+    }
+    return "Rp$result";
+  }
+
   void refreshData() {
     setState(() {
       // futureProduk = api.getProducts();
