@@ -15,6 +15,21 @@ class ProductCard extends StatelessWidget {
   required this.onDetail
   });
 
+  String formatRupiah(double angka) {
+    String hasil = angka.toString();
+    String result = '';
+    int counter = 0;
+    for (int i = hasil.length - 1; i >= 0; i--) {
+      result = hasil[i] + result;
+      counter++;
+      if (counter == 3 && i != 0) {
+        result = ".$result";
+        counter = 0;
+      }
+    }
+    return "Rp$result";
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -66,7 +81,7 @@ class ProductCard extends StatelessWidget {
             ),
             const SizedBox(height: 10,),
              Text(
-             "Harga:Rp${product.harga}",
+             "Harga:Rp${formatRupiah(product.harga)}",
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.normal,
