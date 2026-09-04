@@ -341,7 +341,7 @@ class _HomePageState extends State<HomePage> {
                     
                   ),
                     DropdownMenuItem(
-                    value: "di atas Rp.2.000.000",
+                    value: "Diatas Rp 2.000.000",
                     child: Text("di atas Rp.2.000.00"),                    
                   )                  
                 ],
@@ -349,6 +349,7 @@ class _HomePageState extends State<HomePage> {
               ),
 
               const SizedBox(height: 20),
+
 
                   DropdownButtonFormField<String>(
                 value: sorting,
@@ -370,8 +371,8 @@ class _HomePageState extends State<HomePage> {
                     
                   ),
                     DropdownMenuItem(
-                    value: "Harga terendahh",
-                    child: Text("Harga Terendahh"),
+                    value: "Harga terendah",
+                    child: Text("Harga Terendah"),
                     
                   ),
                     DropdownMenuItem(
@@ -379,7 +380,7 @@ class _HomePageState extends State<HomePage> {
                     child: Text("Harga tertinggi"),                    
                   ),                  
                     DropdownMenuItem(
-                    value: "Stok teredikitt",
+                    value: "Stok teredikit",
                     child: Text("Stok Sedikit"),
                     
                   ),
@@ -390,6 +391,13 @@ class _HomePageState extends State<HomePage> {
                 ],
                 onChanged: pilihSorting,
               ),
+
+            const SizedBox(height: 15),
+            Text("${hasilpencarian.length}Produk di temukan",
+             style:TextStyle(fontWeight:  FontWeight.bold) ,
+             ),
+
+             const SizedBox(height: 15),
 
               
 
